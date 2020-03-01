@@ -1,0 +1,45 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "./build.sh",
+			"problemMatcher": [
+				"$dmd"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "tests",
+			"type": "shell",
+			"command": "dub test",
+			"problemMatcher": [
+				"$dmd"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "release-ldc",
+			"type": "shell",
+			"command": "dub build -b release --compiler=ldmd2",
+			"problemMatcher": [
+				"$dmd"
+			]
+		},
+		{
+			"label": "release-dmd",
+			"type": "shell",
+			"command": "dub build -b release --compiler=dmd",
+			"problemMatcher": [
+				"$dmd"
+			]
+		}
+	]
+}

@@ -1,0 +1,22 @@
+
+{
+	"files.exclude": {
+		"**/.build": true,
+		"**/.dub": true,
+		"**/.out": true,
+		"**/*.lst": true,
+		"**/.reggae": true
+	},
+	"git.alwaysSignOff": true,
+	"C_Cpp.autoAddFileAssociations": false,
+	"dfmt.braceStyle": "otbs",
+	"dfmt.alignSwitchStatements": true,
+	"dfmt.outdentAttributes": true,
+	"dfmt.splitOperatorAtLineEnd": false,
+	"dfmt.spaceAfterCast": false,
+	"dfmt.selectiveImportSpace": true,
+	"dfmt.compactLabeledStatements": true,
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"telemetry.enableTelemetry": false
+}
