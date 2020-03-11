@@ -37,12 +37,38 @@ directly send an email to: contact (at) aurorafoss.org .
 
 module dsqllint.utils.message;
 
+import dsqllint.utils.logger;
+
+@safe pure
+public struct DSQLLintMessage
+{
+
+	/// File name
+	public string filename;
+
+	/// File line
+	public size_t line;
+
+	/// File column
+	public size_t column;
+
+	/// Rule name
+	public string rule = null;
+
+	/// Logging level of the message
+	public LogLevel level;
+
+	/// Description message of the rule
+	public string description;
+}
+
+
 /**
  * Prototype for a custom parser message function or delegate.
  * Parameters passed are a file name, a line, a column, a message and a `bool`
  * that indicates if the message is a warning (`false`) or a if it's an error (`true`).
  */
-alias MessageFunction = void function(string filename , size_t line, size_t column, string message, bool isError);
+alias MessageFunction = void function(DSQLLintMessage msg);
 
 /// ditto
-alias MessageDelegate = void delegate(string filename, size_t line, size_t column, string message, bool isError);
+alias MessageDelegate = void delegate(DSQLLintMessage msg);
