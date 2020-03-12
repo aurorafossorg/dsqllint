@@ -53,6 +53,7 @@ import std.parallelism;
 import std.algorithm;
 import std.conv : to;
 import std.datetime;
+import std.experimental.logger : info, trace;
 
 import aurorafw.stdx.exception;
 
@@ -96,6 +97,7 @@ else
 
 		foreach (file; sqlFiles)
 		{
+			auto before = MonoTime.currTime;
 			try {
 				SQLFile(file.name);
 			} catch(InvalidSQLFileException e) {
@@ -121,9 +123,9 @@ else
 					e.msg
 				);
 
-				//TODO: print this on verbose mode
-				//writeln(e.info);
+				trace(e.info);
 			}
+			info("Analized " ~ file.name ~ " in ", MonoTime.currTime - before);
 		}
 
 		return 0;
