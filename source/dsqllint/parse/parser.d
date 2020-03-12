@@ -43,19 +43,31 @@ import dsqllint.parse.ast.nodes.comment;
 import dsqllint.parse.ast;
 import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.tokens;
+import dsqllint.parse.file;
+
 import std.conv : to;
 
 import std.exception;
 
 @safe pure
-class InvalidParseException: Exception
+class InvalidSQLParseException : InvalidSQLFileException
 {
 	///
-	mixin basicExceptionCtors;
+	@safe pure
+	public this(
+		string msg,
+		SQLFile.Location fileLocation,
+		string file = __FILE__,
+		size_t line = __LINE__,
+		Throwable nextInChain = null)
+	{
+		super(msg, fileLocation, file, line, nextInChain);
+	}
 }
 
 struct SQLParser
 {
+	@safe
 	this(TokenIterator it)
 	{
 		this.it = it;
@@ -107,11 +119,11 @@ struct SQLParser
 			if(hasNext) it.next();
 		}
 		else
-			//TODO: Use proper error handling
-			throw new InvalidParseException(
+			throw new InvalidSQLParseException(
 				"syntax error in "
 				~ cur.startLine.to!string ~ ":" ~ cur.startCol.to!string
-				~ " expected " ~ tokName ~ " but got " ~ cur.token.name
+				~ " expected " ~ tokName ~ " but got " ~ cur.token.name,
+				SQLFile.Location(cur.startLine, cur.startCol)
 			);
 	}
 

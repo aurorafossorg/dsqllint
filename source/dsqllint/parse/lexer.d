@@ -49,6 +49,7 @@ module dsqllint.parse.lexer;
 
 import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.tokens;
+import dsqllint.parse.file;
 
 import std.stdio;
 import std.string;
@@ -63,20 +64,28 @@ import std.array;
 version(unittest) import aurorafw.unit.assertion;
 
 
-/** Invalid Token Exception
+/** Invalid SQL Token Exception
  *
  * Exception that reports an invalid token parsed by the tokenizer.
  *
  * Examples:
  * --------------------
- * throw new InvalidTokenException("This token is invalid");
+ * throw new InvalidSQLTokenException("This token is invalid");
  * --------------------
  */
 @safe pure
-public final class InvalidTokenException: Exception
+public final class InvalidSQLTokenException: InvalidSQLFileException
 {
 	///
-	mixin basicExceptionCtors;
+	public this(
+		string msg,
+		SQLFile.Location fileLocation,
+		string file = __FILE__,
+		size_t line = __LINE__,
+		Throwable nextInChain = null)
+	{
+		super(msg, fileLocation, file, line, nextInChain);
+	}
 }
 
 
@@ -257,7 +266,9 @@ public struct SQLLexer
 		if(captureToken!(_otherTokens)(c).name != "ERROR")
 			return cur.token;
 
-		throw new InvalidTokenException("Can't match a valid token!");
+		throw new InvalidSQLTokenException(
+			"Can't match a valid token!",
+			SQLFile.Location(current.startLine, current.startCol));
 	}
 
 	@safe pure

@@ -46,6 +46,7 @@ import dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.tokens;
 import dsqllint.parse.ast.nodes.statement.select;
+import dsqllint.parse.file;
 
 import aurorafw.stdx.exception;
 
@@ -101,19 +102,23 @@ abstract class SQLStatementNode : SQLBaseNode, SQLStatement
 						throw new NotImplementedException("TODO:");
 					}
 					else
-						throw new InvalidParseException(
+						throw new InvalidSQLParseException(
 							format!"Expected INTO token but got %s"(
-								(it.hasNext) ? nxt.token.name : SQLToken.get!"EOF".name));
+								(it.hasNext) ? nxt.token.name : SQLToken.get!"EOF".name),
+							SQLFile.Location(it.current.startLine, it.current.startCol));
 				}
 
 				default:
-					throw new InvalidParseException(
-						format!"Expected statement token but got %s"(cur.name)
+					throw new InvalidSQLParseException(
+						format!"Expected statement token but got %s"(cur.name),
+						SQLFile.Location(it.current.startLine, it.current.startCol)
 					);
 			}
 		}
 
-		throw new InvalidParseException("Expected statement token but got EOF");
+		throw new InvalidSQLParseException(
+			"Expected statement token but got EOF",
+			SQLFile.Location(it.current.endLine, it.current.endCol));
 	}
 
 	public static SQLStatementNode parse(TokenIterator it, SQLObject parent)

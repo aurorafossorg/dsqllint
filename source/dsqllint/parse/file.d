@@ -51,8 +51,34 @@ import dsqllint.parse.lexer;
 import dsqllint.parse.ast;
 import dsqllint.parse.parser;
 import dsqllint.parse.tokenize.iterator;
+import std.exception;
 
 version(unittest) import aurorafw.unit.assertion;
+
+@safe pure
+public abstract class InvalidSQLFileException : Exception
+{
+	@safe pure
+	public this(
+		string msg,
+		SQLFile.Location fileLocation,
+		string file = __FILE__,
+		size_t line = __LINE__,
+		Throwable nextInChain = null)
+	{
+		super(msg, file, line, nextInChain);
+
+		this._fileLocation = fileLocation;
+	}
+
+	@safe pure
+	public final SQLFile.Location fileLocation() @property
+	{
+		return this._fileLocation;
+	}
+
+	private SQLFile.Location _fileLocation;
+}
 
 /** SQL File
  *
@@ -60,6 +86,16 @@ version(unittest) import aurorafw.unit.assertion;
  */
 public struct SQLFile
 {
+	@safe pure
+	public struct Location
+	{
+		/// Line of the associated filename
+		public size_t line;
+
+		/// Column of the associated filename
+		public size_t column;
+	}
+
 	// disable default constructor
 	@disable this();
 

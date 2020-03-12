@@ -52,6 +52,7 @@ import dsqllint.parse.parser;
 
 import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.hint.ihint;
+import dsqllint.parse.file;
 
 @safe pure
 public final class SQLCommentNode : SQLBaseNode
@@ -70,7 +71,9 @@ public final class SQLCommentNode : SQLBaseNode
 				this.content = tokc.content;
 				break;
 			default:
-				throw new InvalidParseException("Expected comment token but found " ~ tokName);
+				throw new InvalidSQLParseException(
+					"Expected comment token but found " ~ tokName,
+					SQLFile.Location(tokc.startLine, tokc.startCol));
 		}
 	}
 
