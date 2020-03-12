@@ -88,7 +88,6 @@ public struct SQLFile
 	 *
 	 * Returns: file name string
 	 */
-	pragma(inline)
 	public string filename() @property
 	{
 		return this._filename;
@@ -98,7 +97,6 @@ public struct SQLFile
 	 *
 	 * Returns: abstract syntax tree object
 	 */
-	pragma(inline)
 	public SQLTree tree() @property
 	{
 		return this._tree;
