@@ -42,9 +42,12 @@ import dsqllint.parse.tokenize.tokens;
 import dsqllint.parse.parser;
 import dsqllint.utils.printer;
 import dsqllint.parse.file;
+import dsqllint.utils.logger;
+import dsqllint.utils.formatter;
 
 import std.stdio;
 import std.format;
+import std.array;
 import std.file;
 import std.parallelism;
 import std.algorithm;
@@ -53,28 +56,76 @@ import std.datetime;
 
 import aurorafw.stdx.exception;
 
-version(unittest) {}
-else
-int main(string[] args)
+DirEntry[] getFileEntries(string[] args)
 {
-	auto sqlFiles = dirEntries(
-			args.length >= 2 ? args[1] : "",
-			SpanMode.depth
-		).filter!(f => f.isFile && f.name.endsWith(".sql"));
-
-	foreach (file; sqlFiles)
+	auto recursiveSearch(string path)
 	{
-		try {
-			SQLFile(file.name);
-		} catch(Exception e) {
-			if(typeid(e) == typeid(NotImplementedException)
-				|| typeid(e) == typeid(InvalidParseException)
-				|| typeid(e) == typeid(InvalidTokenException))
-				writeln(e.file ~ ":" ~ e.line.to!string ~ ": " ~ e.msg);
-			else
-				throw e;
-		}
+		return dirEntries(
+				path,
+				SpanMode.depth
+			).filter!(f => f.isFile && f.name.endsWith(".sql"));
 	}
 
-	return 0;
+	if(args.empty)
+		return recursiveSearch("").array;
+
+	auto files = Appender!(DirEntry[])();
+
+	foreach(path; args)
+	{
+		if(path.isFile)
+			files ~= DirEntry(path);
+		else
+			files ~= recursiveSearch(path);
+	}
+
+	return files[];
+}
+
+version(unittest) {}
+else
+{
+	int main(string[] args)
+	{
+		IFormatter formatter = new DSQLLintFormatter();
+		ILogger logger = new DSQLLinterLogger(
+			formatter
+		);
+
+		auto sqlFiles = getFileEntries(args[1 .. $]);
+
+		foreach (file; sqlFiles)
+		{
+			try {
+				SQLFile(file.name);
+			} catch(InvalidSQLFileException e) {
+				string reportedRule =
+					(typeid(InvalidSQLParseException) == typeid(e)) ? "Parser" : "Lexer";
+
+				logger.write!(LogLevel.Critical)(
+					file.name,
+					e.fileLocation.line,
+					e.fileLocation.column,
+					reportedRule,
+					e.msg
+				);
+			}
+			// temporary catch
+			catch(NotImplementedException e)
+			{
+				logger.write!(LogLevel.Critical)(
+					e.file,
+					e.line,
+					0,
+					"NotImplementedException",
+					e.msg
+				);
+
+				//TODO: print this on verbose mode
+				//writeln(e.info);
+			}
+		}
+
+		return 0;
+	}
 }

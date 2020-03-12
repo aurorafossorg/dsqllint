@@ -4,14 +4,14 @@ import std.stdio;
 import std.file;
 
 public class ConsoleWriter {
-	public static void write(string args...)
+	public static void write(string data)
 	{
-		writeln(args);
+		writeln(data);
 	}
 
-	public static void writeError(string args...)
+	public static void writeError(string data)
 	{
-		stderr.writeln(args);
+		stderr.writeln(data);
 	}
 }
 
@@ -21,9 +21,9 @@ public class FileWriter {
 		this.file = File(filePath, "wb");
 	}
 
-	public void write(string args...)
+	public void write(string data)
 	{
-		file.writeln(args);
+		file.writeln(data);
 	}
 
 	File file;

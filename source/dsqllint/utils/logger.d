@@ -26,7 +26,7 @@ enum LogLevel : ubyte
 }
 
 /// Function type to write logs
-alias LogWriter = void function(string...);
+alias LogWriter = void delegate(string );
 
 interface ILogger
 {
@@ -65,11 +65,13 @@ public final class DSQLLinterLogger : ILogger
 		this.maxLevel = level;
 
 		this.writeLock = new Mutex();
+
+		import std.functional : toDelegate;
 		this.writers = [
-			&ConsoleWriter.write,
+			toDelegate(&ConsoleWriter.write),
 		];
 		this.errorWriters = [
-			&ConsoleWriter.writeError,
+			toDelegate(&ConsoleWriter.writeError),
 		];
 	}
 
