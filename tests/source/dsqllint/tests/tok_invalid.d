@@ -46,5 +46,5 @@ import dsqllint.parse.tokenize.tokens;
 @safe
 unittest
 {
-	expectThrows!InvalidTokenException(SQLLexer.tokens("😀"));
+	expectThrows!InvalidSQLTokenException(SQLLexer.tokens("😀"));
 }
