@@ -45,7 +45,6 @@ import dsqllint.parse.file;
 import dsqllint.utils.logger;
 import dsqllint.utils.formatter;
 
-import std.stdio;
 import std.format;
 import std.array;
 import std.file;
