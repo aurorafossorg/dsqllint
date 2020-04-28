@@ -56,7 +56,7 @@ import std.experimental.logger : info, trace;
 
 import aurorafw.stdx.exception;
 
-DirEntry[] getFileEntries(string[] args)
+DirEntry[] getFileEntries(string[] args, ILogger logger = null)
 {
 	auto recursiveSearch(string path)
 	{
@@ -73,7 +73,18 @@ DirEntry[] getFileEntries(string[] args)
 
 	foreach(path; args)
 	{
-		if(path.isFile)
+		if(!path.exists)
+		{
+			if(logger !is null)
+				logger.write!(LogLevel.Warning)(
+					path,
+					0,
+					0,
+					"",
+					"No such file or directory"
+				);
+		}
+		else if(path.isFile)
 			files ~= DirEntry(path);
 		else
 			files ~= recursiveSearch(path);
@@ -92,14 +103,15 @@ else
 			formatter
 		);
 
-		auto sqlFiles = getFileEntries(args[1 .. $]);
+		auto sqlFiles = getFileEntries(args[1 .. $], logger);
 
 		foreach (file; sqlFiles)
 		{
 			auto before = MonoTime.currTime;
 			try {
 				SQLFile(file.name);
-			} catch(InvalidSQLFileException e) {
+			}
+			catch(InvalidSQLFileException e) {
 				string reportedRule =
 					(typeid(InvalidSQLParseException) == typeid(e)) ? "Parser" : "Lexer";
 
