@@ -2,6 +2,7 @@ module dsqllint.utils.formatter;
 
 import dsqllint.utils.message;
 import dsqllint.utils.logger;
+import std.range;
 
 interface IFormatter
 {
@@ -62,7 +63,7 @@ public class DSQLLintFormatter : IFormatter
 
 		import std.path : relativePath;
 		string fileInfo = relativePath(msg.filename)
-			~ "(" ~ msg.line.to!string ~ columnText ~ "): ";
+			~ ((msg.line != 0) ? "(" ~ msg.line.to!string ~ columnText ~ ")" : "") ~ ": ";
 		string fileInfoText = (withColors)
 			? colorizeFileInfo(fileInfo)
 			: fileInfo;
@@ -73,7 +74,7 @@ public class DSQLLintFormatter : IFormatter
 
 		return fileInfoText
 			~ levelText
-			~ msg.rule ~ ": "
+			~ ((!msg.rule.empty) ? msg.rule ~ ": " : "")
 			~ msg.description;
 	}
 
