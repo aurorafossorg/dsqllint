@@ -44,54 +44,15 @@ import dsqllint.utils.printer;
 import dsqllint.parse.file;
 import dsqllint.utils.logger;
 import dsqllint.utils.formatter;
+import dsqllint.utils.filesearch;
 
 import std.format;
-import std.array;
-import std.file;
 import std.parallelism;
-import std.algorithm;
 import std.conv : to;
 import std.datetime;
 import std.experimental.logger : info, trace;
 
 import aurorafw.stdx.exception;
-
-DirEntry[] getFileEntries(string[] args, ILogger logger = null)
-{
-	auto recursiveSearch(string path)
-	{
-		return dirEntries(
-				path,
-				SpanMode.depth
-			).filter!(f => f.isFile && f.name.endsWith(".sql"));
-	}
-
-	if(args.empty)
-		return recursiveSearch("").array;
-
-	auto files = Appender!(DirEntry[])();
-
-	foreach(path; args)
-	{
-		if(!path.exists)
-		{
-			if(logger !is null)
-				logger.write!(LogLevel.Warning)(
-					path,
-					0,
-					0,
-					"",
-					"No such file or directory"
-				);
-		}
-		else if(path.isFile)
-			files ~= DirEntry(path);
-		else
-			files ~= recursiveSearch(path);
-	}
-
-	return files[];
-}
 
 version(unittest) {}
 else

@@ -6,6 +6,8 @@ import dsqllint.utils.writer;
 
 import core.sync.mutex : Mutex;
 
+version(unittest) import aurorafw.unit.assertion;
+
 //based on std.experimental.logger.core
 enum LogLevel : ubyte
 {
@@ -100,4 +102,59 @@ public final class DSQLLinterLogger : ILogger
 	private IFormatter formatter;
 	private LogLevel maxLevel;
 	private Mutex writeLock;
+}
+
+
+@system
+@("Logger: DSQLLinterLogger")
+unittest {
+	import std.range.primitives : back;
+	import std.conv : to;
+
+	string[] output;
+
+	void outputWriter(string data)
+	{
+		output ~= data;
+	}
+
+	UnittestDummyFormatter unittestFmt = new UnittestDummyFormatter();
+	DSQLLinterLogger logger = new DSQLLinterLogger(unittestFmt);
+
+	// unittest dummy writers
+	import std.functional : toDelegate;
+	LogWriter[] writers = [toDelegate(&outputWriter)];
+
+	// without writers
+	logger.writers = [];
+
+	auto infoMsg = DSQLLintMessage(
+		"test", 1, 2, "TestRule", LogLevel.Info,
+		"this is a test");
+
+	logger.write(infoMsg);
+	assertEquals([], output);
+
+	// with writer but without errorWriter
+	logger.writers = writers;
+	logger.errorWriters = [];
+
+	auto errorMsg = DSQLLintMessage(
+		"error", 2, 3, "ErrorRule", LogLevel.Error,
+		"this is an error"
+	);
+
+	logger.write(infoMsg);
+	assertEquals(output.back, infoMsg.to!string);
+	// clear outout array
+	output.length = 0;
+
+	logger.write(errorMsg);
+	assertEquals([], output);
+
+
+	// now with error writers
+	logger.errorWriters = writers;
+	logger.write(errorMsg);
+	assertEquals(output.back, errorMsg.to!string);
 }

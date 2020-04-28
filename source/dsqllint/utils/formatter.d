@@ -4,6 +4,8 @@ import dsqllint.utils.message;
 import dsqllint.utils.logger;
 import std.range;
 
+version(unittest) import aurorafw.unit.assertion;
+
 interface IFormatter
 {
 	string toString(DSQLLintMessage msg);
@@ -22,7 +24,7 @@ public class DSQLLintFormatter : IFormatter
 			this.withColors = false;
 	}
 
-	public this(bool withColors = true)
+	public this(bool withColors)
 	{
 		this.withColors = withColors;
 	}
@@ -81,8 +83,46 @@ public class DSQLLintFormatter : IFormatter
 	private bool withColors;
 }
 
-@safe pure
-@("Formatter: Level")
-unittest {
+version(unittest)
+{
+	package class UnittestDummyFormatter : IFormatter
+	{
+		string toString(DSQLLintMessage msg)
+		{
+			import std.conv : to;
+			return msg.to!string;
+		}
+	}
+}
 
+
+@("Formatter: toString")
+unittest
+{
+	auto fmt = new DSQLLintFormatter(false);
+
+	auto msg = DSQLLintMessage(
+		"error", 2, 3, "ErrorRule", LogLevel.Error,
+		"this is an error"
+	);
+
+	assertEquals("error(2:3): Error: ErrorRule: this is an error", fmt.toString(msg));
+
+	msg = DSQLLintMessage(
+		"error", 2, 0, "ErrorRule", LogLevel.Error,
+		"this is an error"
+	);
+	assertEquals("error(2): Error: ErrorRule: this is an error", fmt.toString(msg));
+
+	msg = DSQLLintMessage(
+		"error", 0, 0, "ErrorRule", LogLevel.Error,
+		"this is an error"
+	);
+	assertEquals("error: Error: ErrorRule: this is an error", fmt.toString(msg));
+
+	msg = DSQLLintMessage(
+		"error", 0, 0, "", LogLevel.Error,
+		"this is an error"
+	);
+	assertEquals("error: Error: this is an error", fmt.toString(msg));
 }
