@@ -61,7 +61,7 @@ public abstract class InvalidSQLFileException : Exception
 	@safe pure
 	public this(
 		string msg,
-		SQLFile.Location fileLocation,
+		SQLFile.Location fileLocation = SQLFile.Location.init,
 		string file = __FILE__,
 		size_t line = __LINE__,
 		Throwable nextInChain = null)
