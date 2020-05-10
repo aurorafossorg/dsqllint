@@ -75,8 +75,11 @@ class TokenIterator {
 	}
 
 	@safe pure
-	const(SQLTokenContent) peekNext(Flag!"skipBlankTokens" skipBlankTokens = No.skipBlankTokens)
+	Nullable!(const(SQLTokenContent)) peekNext(Flag!"skipBlankTokens" skipBlankTokens = No.skipBlankTokens)
 	{
+		if(!hasNext)
+			return Nullable!(const(SQLTokenContent)).init;
+
 		if(skipBlankTokens)
 		{
 			size_t pidx = 1;
@@ -84,9 +87,9 @@ class TokenIterator {
 			while(((cur = _tokens[idx + pidx]).token.name == "WHITESPACE" || cur.token.name == "MULTI_LINE_COMMENT") && hasNext)
 				pidx++;
 
-			return cur;
+			return nullable!(const(SQLTokenContent))(cur);
 		} else {
-			return _tokens[idx + 1];
+			return nullable(_tokens[idx + 1]);
 		}
 	}
 
@@ -131,7 +134,7 @@ class TokenIterator {
 }
 
 @safe pure
-@("Token Iterator")
+@("Tokenizer: Token Iterator")
 unittest {
 	import dsqllint.parse.tokenize.tokens;
 
@@ -152,7 +155,10 @@ unittest {
 	assertEquals(toks, it.right);
 
 
+	assertFalse(it.peekNext().isNull);
 	assertEquals(toks[1], it.peekNext());
+	// due to be a nullable
+	assertEquals(toks[1], it.peekNext().get());
 	assertEquals(toks.front, it.current);
 
 	assertEquals(toks[2], it.peekNext(Yes.skipBlankTokens));
@@ -168,5 +174,9 @@ unittest {
 	it.next();
 	assertEquals(toks[2], it.current);
 
-	assertFalse((new TokenIterator([])).hasNext);
+	auto emptyTI = new TokenIterator([]);
+	assertFalse(emptyTI.hasNext());
+	assertTrue(emptyTI.peekNext().isNull);
+	// same thing
+	assertEquals(Nullable!(const(SQLTokenContent)).init, emptyTI.peekNext());
 }
