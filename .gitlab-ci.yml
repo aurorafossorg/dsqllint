@@ -36,7 +36,7 @@
 image: aurorafossorg/archlinux:latest
 
 include:
-  - template: License-Management.gitlab-ci.yml
+  - template: License-Scanning.gitlab-ci.yml
   - project: 'aurorafossorg/core/ci-templates'
     ref: master
     file: '/jobs/dlang/codestyle.yml'
