@@ -48,6 +48,7 @@ import dsqllint.parse.ast.nodes.statement.statement;
 import dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.parser;
 import dsqllint.parse.ast.object;
+import dsqllint.parse.ast.context;
 
 import aurorafw.stdx.exception;
 import std.typecons;
@@ -60,19 +61,12 @@ public abstract class SQLSelectNode : SQLBaseNode
 		throw new NotImplementedException("TODO:");
 	}
 
-	public static SQLSelectNode parse(TokenIterator it, SQLWithSubqueryClause withSubQuery = null)
-	{
-		auto beforeComments = SQLParser.parseComments(it);
-		return parse(it, beforeComments, withSubQuery);
-	}
-
 	public static SQLSelectNode parse(
-		TokenIterator it,
-		SQLCommentNode[] beforeComments,
+		SQLContext context,
 		SQLWithSubqueryClause withSubQuery = null,
-		SQLObject parent = null
 		)
 	{
+		context.parseBeforeCommentsIfNull();
 
 		throw new NotImplementedException("Feature not implemented!");
 	}
@@ -101,42 +95,30 @@ public final class SQLSelectStatementNode : SQLStatementNode
 	}
 
 	public static SQLSelectStatementNode parse(
-		TokenIterator it,
+		SQLContext context,
 		size_t startIndex,
-		Flag!"withToken" withToken,
-		SQLObject parent = null)
+		Flag!"withToken" withToken)
 	{
-		return parse(
-			it,
-			startIndex,
-			withToken,
-			SQLParser.parseComments(it),
-			parent
-		);
-	}
+		context.parseBeforeCommentsIfNull();
 
-	public static SQLSelectStatementNode parse(
-		TokenIterator it,
-		size_t startIndex,
-		Flag!"withToken" withToken,
-		SQLCommentNode[] beforeComments,
-		SQLObject parent = null)
-	{
 		SQLSelectNode select;
 		if(withToken)
 		{
-			SQLWithSubqueryClause withSubQuery = SQLWithSubqueryClause.parse(it, beforeComments);
-			select = SQLSelectNode.parse(it, withSubQuery);
+			SQLWithSubqueryClause withSubQuery = SQLWithSubqueryClause.parse(SQLContext(context.iterator, null, context.beforeComments));
+			select = SQLSelectNode.parse(SQLContext(context.iterator), withSubQuery);
+			withSubQuery.parent = select;
 		}
 		else
-			select = SQLSelectNode.parse(it, beforeComments);
+		{
+			select = SQLSelectNode.parse(SQLContext(context.iterator, null, context.beforeComments));
+		}
 
 		auto ret = new SQLSelectStatementNode(select);
-		ret.parent = parent;
 		select.parent = ret;
-		ret.beforeComments = beforeComments;
-		SQLStatementNode.parseAfter(it, ret);
-		ret.tokens = it.tokens[startIndex .. it.index];
+
+		ret.applyContext(context);
+		ret.parseAfter(context.iterator);
+		ret.applyTokens(startIndex, context.iterator);
 
 		return ret;
 	}

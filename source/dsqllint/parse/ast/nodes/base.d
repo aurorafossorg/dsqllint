@@ -40,7 +40,10 @@ module dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.comment;
 import dsqllint.parse.ast.visitor;
 import dsqllint.parse.ast.object;
+import dsqllint.parse.ast.context;
 import dsqllint.parse.tokenize.tok;
+import dsqllint.parse.tokenize.iterator;
+import dsqllint.parse.parser;
 
 import std.algorithm : map, joiner;
 import std.array;
@@ -120,6 +123,24 @@ abstract class SQLBaseNode : SQLObject
 	protected void afterComments(SQLCommentNode[] val) @property
 	{
 		_afterComments = val;
+	}
+
+	protected void applyContext(SQLContext context)
+	{
+		parent = context.parent;
+		_beforeComments = context.beforeComments;
+	}
+
+	protected void parseAfter(TokenIterator it)
+	{
+		_afterComments = (_afterComments == null)
+			? SQLParser.parseComments(it)
+			: _afterComments ~ SQLParser.parseComments(it);
+	}
+
+	protected void applyTokens(size_t startIndex, TokenIterator it)
+	{
+		_toks = it.tokens[startIndex .. it.index];
 	}
 
 	protected SQLObject _parent;

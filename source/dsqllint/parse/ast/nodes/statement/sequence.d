@@ -42,6 +42,7 @@ import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.statement.statement;
 import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.iterator;
+import dsqllint.parse.ast.context;
 
 import std.array;
 
@@ -52,17 +53,17 @@ final class StatementSequenceNode : SQLBaseNode
 		this.tokens = tokens;
 	}
 
-	public static StatementSequenceNode parse(TokenIterator it)
+	public static StatementSequenceNode parse(SQLContext context)
 	{
-		auto ret = new StatementSequenceNode(it.tokens);
+		auto ret = new StatementSequenceNode(context.iterator.tokens);
 
 		auto statements = appender!(SQLStatementNode[]);
 
 		SQLStatementNode lastStatement;
-		if(it.hasNext)
-			statements ~= (lastStatement = SQLStatementNode.parse(it, ret));
-		while(it.hasNext)
-			statements ~= (lastStatement = SQLStatementNode.parse(it, ret, lastStatement.afterComments));
+		if(context.iterator.hasNext)
+			statements ~= (lastStatement = SQLStatementNode.parse(SQLContext(context.iterator, ret)));
+		while(context.iterator.hasNext)
+			statements ~= (lastStatement = SQLStatementNode.parse(SQLContext(context.iterator, ret, lastStatement.afterComments)));
 
 		ret.statements = statements[];
 		ret.beforeComments = ret.statements.front.beforeComments;

@@ -44,6 +44,7 @@ import dsqllint.parse.ast;
 import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.tokens;
 import dsqllint.parse.file;
+import dsqllint.parse.ast.context;
 
 import std.conv : to;
 
@@ -75,7 +76,7 @@ struct SQLParser
 
 	SQLTree parse()
 	{
-		auto statements = StatementSequenceNode.parse(it);
+		auto statements = StatementSequenceNode.parse(SQLContext(it));
 		return new SQLTree(statements);
 	}
 

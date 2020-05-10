@@ -47,6 +47,7 @@ import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.tokenize.tokens;
 import dsqllint.parse.ast.nodes.statement.select;
 import dsqllint.parse.file;
+import dsqllint.parse.ast.context;
 
 import aurorafw.stdx.exception;
 
@@ -64,77 +65,69 @@ abstract class SQLStatementNode : SQLBaseNode, SQLStatement
 	}
 
 	public static SQLStatementNode parse(
-		TokenIterator it,
-		SQLObject parent,
-		SQLCommentNode[] beforeComments)
+		SQLContext context)
 	{
-		if(it.hasNext)
+		context.parseBeforeCommentsIfNull();
+
+		if(context.iterator.hasNext)
 		{
-			size_t startIndex = it.index;
+			size_t startIndex = context.iterator.index;
 
 			//alias
-			auto cur = it.current.token;
+			auto cur = context.iterator.current.token;
 
 			switch(cur.name)
 			{
 				case SQLToken.get!"WITH".name:
 					return SQLSelectStatementNode.parse(
-						it,
+						context,
 						startIndex,
-						Yes.withToken,
-						beforeComments,
-						parent);
+						Yes.withToken);
 				case SQLToken.get!"SELECT".name:
 					return SQLSelectStatementNode.parse(
-						it,
+						context,
 						startIndex,
-						No.withToken,
-						beforeComments,
-						parent);
+						No.withToken);
 				case SQLToken.get!"UPDATE".name:
 					throw new NotImplementedException("TODO:");
 					// break;
 				case SQLToken.get!"INSERT".name:
 				{
 					SQLTokenContent nxt;
-					if(it.hasNext && (nxt = it.peekNext(Yes.skipBlankTokens)).token.name == SQLToken.get!"INTO".name)
+					if(context.iterator.hasNext && (nxt = context.iterator.peekNext(Yes.skipBlankTokens)).token.name == SQLToken.get!"INTO".name)
 					{
 						throw new NotImplementedException("TODO:");
 					}
 					else
 						throw new InvalidSQLParseException(
 							format!"Expected INTO token but got %s"(
-								(it.hasNext) ? nxt.token.name : SQLToken.get!"EOF".name),
-							SQLFile.Location(it.current.startLine, it.current.startCol));
+								(context.iterator.hasNext) ? nxt.token.name : SQLToken.get!"EOF".name),
+							SQLFile.Location(context.iterator.current.startLine, context.iterator.current.startCol));
 				}
 
 				default:
 					throw new InvalidSQLParseException(
 						format!"Expected statement token but got %s"(cur.name),
-						SQLFile.Location(it.current.startLine, it.current.startCol)
+						SQLFile.Location(context.iterator.current.startLine, context.iterator.current.startCol)
 					);
 			}
 		}
 
 		throw new InvalidSQLParseException(
 			"Expected statement token but got EOF",
-			SQLFile.Location(it.current.endLine, it.current.endCol));
+			SQLFile.Location(context.iterator.current.endLine, context.iterator.current.endCol));
 	}
 
-	public static SQLStatementNode parse(TokenIterator it, SQLObject parent)
+	override
+	protected void parseAfter(TokenIterator it)
 	{
-		auto beforeComments = SQLParser.parseComments(it);
-		return parse(it, parent, beforeComments);
-	}
+		_afterComments = SQLParser.parseComments(it);
 
-	protected static void parseAfter(TokenIterator it, SQLStatementNode node)
-	{
-		node.afterComments = SQLParser.parseComments(it);
 		if(it.hasNext && it.current.token.name == SQLToken.get!"SEMICOLON".name)
 		{
-			node.afterSemi = true;
+			afterSemi = true;
 			it.next();
-			node._afterComments ~= SQLParser.parseComments(it);
+			super.parseAfter(it);
 		}
 	}
 

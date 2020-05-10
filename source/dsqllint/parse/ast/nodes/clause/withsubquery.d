@@ -47,6 +47,7 @@ import dsqllint.parse.ast.nodes.statement.select;
 import dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.parser;
 import dsqllint.parse.tokenize.tokens;
+import dsqllint.parse.ast.context;
 
 public class SQLWithSubqueryClause : SQLBaseNode
 {
@@ -56,12 +57,11 @@ public class SQLWithSubqueryClause : SQLBaseNode
 	public static class Entry : SQLTableSourceNode
 	{
 		public static Entry parse(
-			TokenIterator it,
-			SQLObject parent)
+			SQLContext context)
 		{
-			SQLParser.accept!"WITH"(it);
+			SQLParser.accept!"WITH"(context.iterator);
 			SQLWithSubqueryClause.Entry ret = new SQLWithSubqueryClause.Entry();
-			ret.parent = parent;
+			ret.parent = context.parent;
 
 			return ret;
 		}
@@ -71,32 +71,25 @@ public class SQLWithSubqueryClause : SQLBaseNode
 	protected SQLStatement returningStatement;
 	}
 
-	public static SQLWithSubqueryClause parse(TokenIterator it)
+	public static SQLWithSubqueryClause parse(SQLContext context)
 	{
-		auto beforeComments = SQLParser.parseComments(it);
-		return parse(it, beforeComments);
-	}
+		context.parseBeforeCommentsIfNull();
 
-	public static SQLWithSubqueryClause parse(
-		TokenIterator it,
-		SQLCommentNode[] beforeComments
-		)
-	{
 		SQLWithSubqueryClause ret;
 
 		// validate WITH token
-		SQLParser.accept!"WITH"(it);
+		SQLParser.accept!"WITH"(context.iterator);
 		ret = new SQLWithSubqueryClause();
 
-		if(it.current.token.name == SQLToken.get!"RECURSIVE".name)
+		if(context.iterator.current.token.name == SQLToken.get!"RECURSIVE".name)
 		{
-			it.next();
+			context.iterator.next();
 			ret.recursive = true;
 		}
 
 		do {
-			ret.entries ~= Entry.parse(it, ret);
-		} while(it.hasNext);
+			ret.entries ~= Entry.parse(SQLContext(context.iterator, ret));
+		} while(context.iterator.hasNext);
 
 		return ret;
 	}
