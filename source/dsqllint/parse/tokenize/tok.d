@@ -39,6 +39,8 @@ module dsqllint.parse.tokenize.tok;
 
 import std.array;
 
+version(unittest) import aurorafw.unit.assertion;
+
 @safe pure
 struct SQLTokenDeclaration
 {
@@ -90,6 +92,24 @@ struct SQLTokenDeclaration
 		else
 			return false;
 	}
+}
+
+@system pure
+@("Tokenizer: Token Declarator")
+unittest
+{
+	assertEquals(sqlTokDec!"NAME", sqlTokDec!"NAME");
+	assertTrue(sqlTokDecSpecial!"SPECIAL".isSpecial);
+	assertTrue(sqlTokDecSpecial!"SPECIAL".hasType(SQLTokenDeclaration.Type.Special));
+	assertFalse(sqlTokDec!"NAME".isSpecial);
+	assertFalse(sqlTokDec!"NAME".hasType(SQLTokenDeclaration.Type.Special));
+
+	import core.exception : AssertError;
+	import std.exception : assertThrown;
+	assertThrown!AssertError(sqlTokDec!"NAME".assertSame(sqlTokDec!"NAME"));
+	assertThrown!AssertError(sqlTokDec!"FOO".assertSame(sqlTokDec!("BAR", "(FOO)")));
+
+	assertFalse(sqlTokDec!"FOO".assertSame(sqlTokDec!"BAR"));
 }
 
 alias SQLTok = SQLTokenDeclaration;
@@ -195,4 +215,36 @@ package template sqlTokDecClause(string name)
 package template sqlTokDecSpecial(string name)
 {
 	enum sqlTokDecSpecial = sqlTokDec!(name, null, null, SQLTokType.Special);
+}
+
+
+
+@system pure
+@("Tokenizer: Token Declarator Templates")
+unittest
+{
+	//sqlTokDec
+	assertTrue(sqlTokDec!"TUNA".hasType(SQLTokType.Other));
+	assertEquals("TUNA", sqlTokDec!"TUNA".name);
+	assertEquals("^(TUNA)", sqlTokDec!"TUNA".match);
+	assertEquals("^(F)", sqlTokDec!("TUNA", "(F)").match);
+
+
+	//sqlTokDecWord
+	assertTrue(sqlTokDecWord!"WORD".hasType(SQLTokType.Word));
+	assertTrue(sqlTokDecWord!"WORD".hasType(SQLTokType.Other));
+	assertTrue(sqlTokDecWord!"WORD".hasType(SQLTokType.Word | SQLTokType.Other));
+	assertFalse(sqlTokDecWord!"WORD".hasType(SQLTokType.Special));
+
+	//sqlTokDecSpecial
+	assertTrue(sqlTokDecSpecial!"SPECIAL".isSpecial);
+	assertTrue(sqlTokDecSpecial!"SPECIAL".hasType(SQLTokenDeclaration.Type.Special));
+
+	//sqlTokDecClause
+	assertTrue(sqlTokDecClause!"WHERE".hasType(SQLTokType.Clause));
+	assertFalse(sqlTokDecClause!"WHERE".hasType(SQLTokType.Statement));
+
+	//sqlTokDecStatement
+	assertTrue(sqlTokDecStatement!"SELECT".hasType(SQLTokType.Statement));
+	assertFalse(sqlTokDecStatement!"SELECT".hasType(SQLTokType.Clause));
 }
