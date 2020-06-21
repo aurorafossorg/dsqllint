@@ -59,15 +59,18 @@ final class StatementSequenceNode : SQLBaseNode
 
 		auto statements = appender!(SQLStatementNode[]);
 
+		context.parseBeforeCommentsIfNull();
+
 		SQLStatementNode lastStatement;
 		if(context.iterator.hasNext)
-			statements ~= (lastStatement = SQLStatementNode.parse(SQLContext(context.iterator, ret)));
+			statements ~= (lastStatement = SQLStatementNode.parse(SQLContext(context.iterator, ret, context.beforeComments)));
 		while(context.iterator.hasNext)
 			statements ~= (lastStatement = SQLStatementNode.parse(SQLContext(context.iterator, ret, lastStatement.afterComments)));
 
 		ret.statements = statements[];
-		ret.beforeComments = ret.statements.front.beforeComments;
-		ret.afterComments = ret.statements.back.afterComments;
+		ret.beforeComments = context.beforeComments;
+		if(ret.statements.length > 0)
+			ret.afterComments = ret.statements.back.afterComments;
 
 		return ret;
 	}
