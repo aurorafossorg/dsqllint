@@ -65,10 +65,10 @@ public final class SQLCommentNode : SQLBaseNode
 		switch(tokName)
 		{
 			case "MULTI_LINE_COMMENT":
-				this.multiLine = true;
+				this._multiLine = true;
 				goto case;
 			case "LINE_COMMENT":
-				this.content = tokc.content;
+				this._content = tokc.content;
 				break;
 			default:
 				throw new InvalidSQLParseException(
@@ -77,11 +77,28 @@ public final class SQLCommentNode : SQLBaseNode
 		}
 	}
 
+
+	/**
+	 * Multi line comment property
+	 * Returns: true if the comment is multiline, false otherwise.
+	 */
+	@safe pure
 	@property bool isMultiline()
 	{
-		return multiLine;
+		return _multiLine;
 	}
 
-	private bool multiLine;
-	private string content;
+	/**
+	 * Content of the comment
+	 * Returns: the comment content
+	 */
+	@safe pure
+	@property string content()
+	{
+		return _content;
+	}
+
+
+	protected bool _multiLine;
+	protected string _content;
 }
