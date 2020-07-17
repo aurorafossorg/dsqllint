@@ -42,7 +42,7 @@ import dsqllint.parse.ast.nodes.expression.name;
 import dsqllint.parse.ast.nodes.expression.expression;
 import dsqllint.parse.ast.nodes.datatype.idatatype;
 import dsqllint.parse.ast.object;
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
 
 import aurorafw.stdx.exception;
 

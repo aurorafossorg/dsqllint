@@ -50,6 +50,7 @@ DirEntry[] getFileEntries(string[] args, ILogger logger = null)
 	return files[];
 }
 
+///
 @system
 @("App: File Entries")
 unittest

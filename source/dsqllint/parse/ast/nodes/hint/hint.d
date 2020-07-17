@@ -1,10 +1,10 @@
 /*
-  ____      ____  ____  _     _     _  _    _  _____
+	____      ____  ____  _     _     _  _    _  _____
  |  _"\    / ___\/  _ \/ \   / \   / \/ \  / |/__ __\
 /| | | |   |    \| / \|| |   | |   | || |\ | |  / \
 U| |_| |\  \___ || \_\|| |_/\| |_/\| || | \| |  | |
  |____/ u  \____/\____\\____/\____/\_/\_/  \_|  \_/
-  |||_
+	|||_
  (__)_)
 
 Copyright (C) 2019-2020 Aurora Free Open Source Software.
@@ -35,49 +35,11 @@ For more info about intellectual property visit: aurorafoss.org or
 directly send an email to: contact (at) aurorafoss.org .
  */
 
-module dsqllint.parse.ast.visitor;
+module dsqllint.parse.ast.nodes.hint.hint;
 
 import dsqllint.parse.ast.object;
 
-// private immutable uint[TypeInfo] typeMap;
-
-// shared static this()
-// {
-//     // typeMap[typeid(AddExpression)] = 1;
-// }
-
-interface SQLASTVisitor {
-	void postVisit(SQLObject obj);
-	void preVisit(SQLObject obj);
-	// void visit(const ExpressionNode n)
-	// {
-	//     switch (typeMap[typeid(n)])
-	//     {
-	//         //case 1: visit(cast(AddExpression) n); break;
-	//         default: assert(false, __MODULE__ ~ " has a bug");
-	//     }
-	// }
-}
-
-//TODO: Reference libdparse here
-template visitIfNotNull(fields ...)
+public interface SQLHint : SQLObject
 {
-	static if (fields.length > 1)
-		immutable visitIfNotNull = visitIfNotNull!(fields[0]) ~ visitIfNotNull!(fields[1..$]);
-	else
-	{
-		static if (typeof(fields[0]).stringof[$ - 2 .. $] == "[]")
-		{
-			static if (__traits(hasMember, typeof(fields[0][0]), "classinfo"))
-				immutable visitIfNotNull = "foreach (i; " ~ fields[0].stringof ~ ") if (i !is null) visitor.visit(i);\n";
-			else
-				immutable visitIfNotNull = "foreach (i; " ~ fields[0].stringof ~ ") visitor.visit(i);\n";
-		}
-		else static if (__traits(hasMember, typeof(fields[0]), "classinfo"))
-			immutable visitIfNotNull = "if (" ~ fields[0].stringof ~ " !is null) visitor.visit(" ~ fields[0].stringof ~ ");\n";
-		else static if (is(Unqual!(typeof(fields[0])) == Token))
-			immutable visitIfNotNull = "if (" ~ fields[0].stringof ~ ` != tok!""` ~ ") visitor.visit(" ~ fields[0].stringof ~ ");\n";
-		else
-			immutable visitIfNotNull = "visitor.visit(" ~ fields[0].stringof ~ ");\n";
-	}
+
 }

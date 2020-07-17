@@ -39,7 +39,7 @@ module dsqllint.parse.ast.nodes.keep;
 
 import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.clause.orderby;
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
 
 import aurorafw.stdx.exception;
 

@@ -38,7 +38,8 @@ directly send an email to: contact (at) aurorafoss.org .
 module dsqllint.parse.ast.nodes.base;
 
 import dsqllint.parse.ast.nodes.comment;
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
+import dsqllint.parse.ast.astnode;
 import dsqllint.parse.ast.object;
 import dsqllint.parse.ast.context;
 import dsqllint.parse.tokenize.tok;
@@ -48,18 +49,8 @@ import dsqllint.parse.parser;
 import std.algorithm : map, joiner;
 import std.array;
 
-abstract class SQLBaseNode : SQLObject
+abstract class SQLBaseNode : SQLObject, SQLASTNode
 {
-	// protected this(const(SQLBaseNode) obj)
-	// {
-	//     this.parent = obj.parent;
-	//     this.toks = obj.toks;
-	// }
-
-	// SQLBaseNode dup() const
-	// {
-	//     return new SQLBaseNode(this);
-	// }
 
 	public @property SQLObject parent()
 	{
@@ -81,16 +72,17 @@ abstract class SQLBaseNode : SQLObject
 		_toks = tokens;
 	}
 
-	public void accept(SQLASTVisitor visitor) const
+	override
+	public void accept(SQLASTVisitor visitor)
 	{
-		// visitor.preVisit(this);
-		// accept0(visitor);
-		// visitor.postVisit(this);
+		visitor.preVisit(this);
+		accept0(visitor);
+		visitor.postVisit(this);
 	}
 
-	// protected abstract void accept0(SQLASTVisitor visitor) const;
+	protected abstract void accept0(SQLASTVisitor visitor);
 
-	override public string toString() const
+	override public string toString()
 	{
 		return _toks.map!(t => t.content).join;
 	}

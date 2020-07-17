@@ -40,6 +40,9 @@ module dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.tokenize.tok;
 
 import std.array;
+
+// export Yes and No for flags
+public import std.typecons : Yes, No;
 import std.typecons;
 
 version(unittest) import aurorafw.unit.assertion;

@@ -51,16 +51,17 @@ import dsqllint.parse.tokenize.tok;
 import dsqllint.parse.parser;
 
 import dsqllint.parse.ast.nodes.base;
-import dsqllint.parse.ast.nodes.hint.ihint;
+import dsqllint.parse.ast.object;
+import dsqllint.parse.ast.visitor.visitor;
 import dsqllint.parse.file;
+import dsqllint.parse.ast.nodes.hint.hint;
 
-@safe pure
-public final class SQLCommentNode : SQLBaseNode
+public final class SQLCommentNode : SQLBaseNode, SQLHint
 {
-	@safe pure
-	this(SQLTokenContent tokc)
+	public this(SQLTokenContent tokc)
 	{
 		string tokName = tokc.token.name;
+		this.tokens = [tokc];
 
 		switch(tokName)
 		{
@@ -75,6 +76,14 @@ public final class SQLCommentNode : SQLBaseNode
 					"Expected comment token but found " ~ tokName,
 					SQLFile.Location(tokc.startLine, tokc.startCol));
 		}
+	}
+
+	///
+	override
+	protected void accept0(SQLASTVisitor visitor)
+	{
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 
@@ -98,6 +107,12 @@ public final class SQLCommentNode : SQLBaseNode
 		return _content;
 	}
 
+	///
+	override
+	public string toString()
+	{
+		return _content;
+	}
 
 	protected bool _multiLine;
 	protected string _content;

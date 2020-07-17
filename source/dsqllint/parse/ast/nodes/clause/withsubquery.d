@@ -41,6 +41,7 @@ import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.expression.name;
 import dsqllint.parse.ast.nodes.statement;
 import dsqllint.parse.ast.nodes.comment;
+import dsqllint.parse.ast.visitor.visitor;
 import dsqllint.parse.ast.object;
 import dsqllint.parse.ast.nodes.statement.tablesource.tablesource;
 import dsqllint.parse.ast.nodes.statement.select;
@@ -66,9 +67,31 @@ public class SQLWithSubqueryClause : SQLBaseNode
 			return ret;
 		}
 
+		///
+		override
+		protected void accept0(SQLASTVisitor visitor)
+		{
+			if (visitor.visit(this)) {
+				acceptChild!SQLName(visitor, columns);
+				acceptChild(visitor, subQuery);
+				acceptChild(visitor, returningStatement);
+			}
+			visitor.endVisit(this);
+		}
+
 		protected SQLName[] columns;
 	protected SQLSelectNode subQuery;
 	protected SQLStatement returningStatement;
+	}
+
+	///
+	override
+	protected void accept0(SQLASTVisitor visitor)
+	{
+		if (visitor.visit(this)) {
+			acceptChild!Entry(visitor, entries);
+		}
+		visitor.endVisit(this);
 	}
 
 	public static SQLWithSubqueryClause parse(SQLContext context)

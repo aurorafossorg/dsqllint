@@ -41,7 +41,7 @@ import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.clause.orderby;
 import dsqllint.parse.ast.nodes.expression;
 import dsqllint.parse.ast.nodes.comment;
-import dsqllint.parse.ast.nodes.hint.ihint;
+import dsqllint.parse.ast.nodes.hint.hint;
 import dsqllint.parse.ast.nodes.clause.withsubquery;
 import dsqllint.parse.ast.nodes.statement.select.iquery;
 import dsqllint.parse.ast.nodes.statement.statement;
@@ -49,6 +49,7 @@ import dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.parser;
 import dsqllint.parse.ast.object;
 import dsqllint.parse.ast.context;
+import dsqllint.parse.ast.visitor;
 
 import aurorafw.stdx.exception;
 import std.typecons;
@@ -60,6 +61,26 @@ public abstract class SQLSelectNode : SQLBaseNode
 	{
 		throw new NotImplementedException("TODO:");
 	}
+
+	///
+	override
+	protected void accept0(SQLASTVisitor visitor)
+	{
+        if (visitor.visit(this))
+		{
+            acceptChild(visitor, withSubQuery);
+            acceptChild(visitor, query);
+            acceptChild(visitor, restriction);
+            acceptChild(visitor, orderBy);
+
+            acceptChild!SQLHint(visitor, hints);
+
+            acceptChild(visitor, offset);
+            acceptChild(visitor, rowCount);
+        }
+
+        visitor.endVisit(this);
+    }
 
 	public static SQLSelectNode parse(
 		SQLContext context,
@@ -93,6 +114,16 @@ public final class SQLSelectStatementNode : SQLStatementNode
 	{
 		this.select = select;
 	}
+
+	///
+	override
+	protected void accept0(SQLASTVisitor visitor)
+	{
+        if (visitor.visit(this))
+            acceptChild(visitor, select);
+
+        visitor.endVisit(this);
+    }
 
 	public static SQLSelectStatementNode parse(
 		SQLContext context,

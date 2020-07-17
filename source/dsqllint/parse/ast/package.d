@@ -38,5 +38,5 @@ directly send an email to: contact (at) aurorafoss.org .
 module dsqllint.parse.ast;
 
 public import dsqllint.parse.ast.tree;
-public import dsqllint.parse.ast.visitor;
+public import dsqllint.parse.ast.visitor.visitor;
 public import dsqllint.parse.ast.object;

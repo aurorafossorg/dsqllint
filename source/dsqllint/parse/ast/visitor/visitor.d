@@ -35,11 +35,44 @@ For more info about intellectual property visit: aurorafoss.org or
 directly send an email to: contact (at) aurorafoss.org .
  */
 
-module dsqllint.parse.ast.nodes.hint.ihint;
+module dsqllint.parse.ast.visitor.visitor;
 
 import dsqllint.parse.ast.object;
+import dsqllint.parse.ast.nodes;
 
-public interface SQLHint : SQLObject
-{
+// private immutable uint[TypeInfo] typeMap;
 
+// shared static this()
+// {
+//     // typeMap[typeid(AddExpression)] = 1;
+// }
+
+interface SQLASTVisitor {
+	// SQLObject
+	void postVisit(SQLObject obj);
+	void preVisit(SQLObject obj);
+
+	// SQLSelectNode
+	void endVisit(SQLSelectNode node);
+    bool visit(SQLSelectNode node);
+
+	// SQLSelectStatementNode
+	void endVisit(SQLSelectStatementNode node);
+    bool visit(SQLSelectStatementNode node);
+
+	// StatementSequenceNode
+	void endVisit(StatementSequenceNode node);
+    bool visit(StatementSequenceNode node);
+
+	// SQLWithSubqueryClause
+	void endVisit(SQLWithSubqueryClause node);
+    bool visit(SQLWithSubqueryClause node);
+
+	// SQLWithSubqueryClause.Entry
+	void endVisit(SQLWithSubqueryClause.Entry entry);
+    bool visit(SQLWithSubqueryClause.Entry entry);
+
+	// SQLCommentNode
+	void endVisit(SQLCommentNode node);
+	bool visit(SQLCommentNode node);
 }

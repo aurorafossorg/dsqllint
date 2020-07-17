@@ -37,7 +37,7 @@ directly send an email to: contact (at) aurorafoss.org .
 
 module dsqllint.parse.ast.nodes.statement.sequence;
 
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
 import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.statement.statement;
 import dsqllint.parse.tokenize.tok;
@@ -73,6 +73,24 @@ final class StatementSequenceNode : SQLBaseNode
 			ret.afterComments = ret.statements.back.afterComments;
 
 		return ret;
+	}
+
+	///
+	override
+	protected void accept0(SQLASTVisitor visitor)
+	{
+		if (visitor.visit(this)) {
+			acceptChild!SQLStatementNode(visitor, statements);
+		}
+		visitor.endVisit(this);
+	}
+
+	///
+	override
+	public string toString()
+	{
+		import std.format : format;
+		return format!"SQLStatementSequence(%s)"(statements);
 	}
 
 	SQLStatementNode[] statements;

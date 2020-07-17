@@ -40,7 +40,7 @@ module dsqllint.parse.ast.nodes.statement.tablesource.tablesource;
 import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.nodes.statement.tablesource.itablesource;
 import dsqllint.parse.ast.nodes.expression;
-import dsqllint.parse.ast.nodes.hint.ihint;
+import dsqllint.parse.ast.nodes.hint.hint;
 
 import aurorafw.stdx.exception;
 

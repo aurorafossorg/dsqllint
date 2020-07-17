@@ -39,17 +39,30 @@ module dsqllint.parse.ast.tree;
 
 import dsqllint.parse.ast.nodes.statement.sequence;
 
-class SQLTree
+public final class SQLTree
 {
-	this(StatementSequenceNode statements)
+	public this(StatementSequenceNode sequence)
 	{
-		this._statements = statements;
+		this._sequence = sequence;
 	}
 
-	public @property StatementSequenceNode statements()
+
+	/**
+	 * The statement sequence node with a list of statement nodes
+	 * Returns: the statement sequence node object
+	 */
+	public @property StatementSequenceNode sequence()
 	{
-		return this._statements;
+		return this._sequence;
 	}
 
-	private StatementSequenceNode _statements;
+	override
+	public string toString()
+	{
+		import std.format : format;
+		return format!"SQLTree(%s)"(_sequence.toString);
+	}
+
+
+	private StatementSequenceNode _sequence;
 }

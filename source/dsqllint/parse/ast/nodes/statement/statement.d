@@ -40,7 +40,7 @@ module dsqllint.parse.ast.nodes.statement.statement;
 import dsqllint.parse.ast.nodes.base;
 import dsqllint.parse.ast.object;
 import dsqllint.parse.ast.nodes.comment;
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
 import dsqllint.parse.parser;
 import dsqllint.parse.tokenize.iterator;
 import dsqllint.parse.tokenize.tok;

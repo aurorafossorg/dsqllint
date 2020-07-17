@@ -39,12 +39,11 @@ module dsqllint.parse.ast.object;
 
 import dsqllint.parse.ast.nodes.comment;
 import dsqllint.parse.ast.nodes.datatype;
-import dsqllint.parse.ast.visitor;
+import dsqllint.parse.ast.visitor.visitor;
 
 interface SQLObject
 {
-	// void accept(SQLASTVisitor visitor) const;
-	// SQLObject dup() const;
+	void accept(SQLASTVisitor visitor);
 
 	@property SQLObject parent();
 	@property void parent(SQLObject parent);

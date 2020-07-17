@@ -84,7 +84,7 @@ struct SQLParser
 	{
 		import std.array : appender;
 		auto ret = appender!(SQLCommentNode[])();
-		whileIterator: while(it.hasNext)
+		whileIterator: while(it.current.token.name != "EOF")
 		{
 			auto cur = it.current.token;
 
@@ -92,11 +92,14 @@ struct SQLParser
 			{
 				case "LINE_COMMENT":
 				case "MULTI_LINE_COMMENT":
-					ret.put(new SQLCommentNode(it.current));
+					ret ~= new SQLCommentNode(it.current);
 					goto case;
 				case "WHITESPACE":
-					it.next();
-					continue;
+					if(it.hasNext)
+					{
+						it.next(No.skipBlankTokens);
+						continue;
+					} else goto default;
 				default: break whileIterator;
 			}
 		}
