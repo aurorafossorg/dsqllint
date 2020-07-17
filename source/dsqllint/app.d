@@ -46,6 +46,7 @@ import dsqllint.utils.logger;
 import dsqllint.utils.formatter;
 import dsqllint.utils.filesearch;
 
+import std.stdio;
 import std.format;
 import std.parallelism;
 import std.conv : to;
@@ -70,7 +71,10 @@ else
 		{
 			auto before = MonoTime.currTime;
 			try {
-				SQLFile(file.name);
+				auto sqlfile = SQLFile(file.name);
+				writefln("File: %s", sqlfile.filename);
+				writefln("Tree: %s", sqlfile.tree);
+				writefln("Comments: %s", sqlfile.tree.sequence.beforeComments);
 			}
 			catch(InvalidSQLFileException e) {
 				string reportedRule =
@@ -97,7 +101,7 @@ else
 
 				trace(e.info);
 			}
-			info("Analized " ~ file.name ~ " in ", MonoTime.currTime - before);
+			debug info("Analized " ~ file.name ~ " in ", MonoTime.currTime - before);
 		}
 
 		return 0;
