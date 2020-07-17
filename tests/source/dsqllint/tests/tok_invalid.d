@@ -42,6 +42,8 @@ version (unittest) import aurorafw.unit.assertion;
 import dsqllint.parse.lexer;
 import dsqllint.parse.tokenize.tokens;
 
+
+///
 @("Tokenizer: Invalid token")
 @safe
 unittest

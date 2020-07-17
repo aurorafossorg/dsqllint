@@ -56,6 +56,8 @@ private void nonValidToken(alias tokName)(string content)
 	assertFalse(SQLToken.get!tokName == SQLLexer.tokens(content).front);
 }
 
+
+///
 @("Tokenizer: Validate all swoi tokens")
 unittest {
 	enum toks = SQLToken.spec
@@ -68,6 +70,8 @@ unittest {
 		assertEquals(_, SQLLexer.tokens(_.name ~ " ").front);
 }
 
+
+///
 @("Tokenizer: Validate identifier token")
 unittest
 {
@@ -82,6 +86,8 @@ unittest
 	nonValidToken!"IDENTIFIER"(" ");
 }
 
+
+///
 @("Tokenizer: Validate all other tokens")
 unittest {
 	validateToken!"EQEQ"("==");

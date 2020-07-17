@@ -44,6 +44,8 @@ import dsqllint.parse.tokenize.tokens;
 import std.algorithm.iteration;
 import std.array;
 
+
+///
 @("Tokenizer: Simple SELECT statement")
 @safe
 unittest {
@@ -66,12 +68,16 @@ unittest {
 	assertEquals(tokens, SQLLexer.tokens(source).map!(t => t.name).array);
 }
 
+
+///
 @("Tokenizer: Detect IDENTIFIER instead of SELECT")
 @safe
 unittest {
 	assertEquals([SQLToken.get!"IDENTIFIER"], SQLLexer.tokens("SELECTfalse"));
 }
 
+
+///
 @("Tokenizer: Case insensitive SELECT, detect SELECT instead of IDENTIFIER")
 unittest {
 	assertEquals(SQLToken.get!"SELECT", SQLLexer.tokens("Select ").front);
