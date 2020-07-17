@@ -36,13 +36,12 @@
 image: aurorafossorg/archlinux:latest
 
 include:
-  - template: License-Scanning.gitlab-ci.yml
   - project: 'aurorafossorg/core/ci-templates'
     ref: master
-    file: '/jobs/dlang/codestyle.yml'
+    file: '/common.yml'
   - project: 'aurorafossorg/core/ci-templates'
     ref: master
-    file: '/jobs/dlang/syntax_check.yml'
+    file: '/dlang.yml'
 
   # !! project file not working, using remote as workaround !!
 
