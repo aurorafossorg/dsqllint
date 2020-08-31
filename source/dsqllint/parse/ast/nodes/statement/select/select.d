@@ -66,21 +66,21 @@ public abstract class SQLSelectNode : SQLBaseNode
 	override
 	protected void accept0(SQLASTVisitor visitor)
 	{
-        if (visitor.visit(this))
+		if (visitor.visit(this))
 		{
-            acceptChild(visitor, withSubQuery);
-            acceptChild(visitor, query);
-            acceptChild(visitor, restriction);
-            acceptChild(visitor, orderBy);
+			acceptChild(visitor, withSubQuery);
+			acceptChild(visitor, query);
+			acceptChild(visitor, restriction);
+			acceptChild(visitor, orderBy);
 
-            acceptChild!SQLHint(visitor, hints);
+			acceptChild!SQLHint(visitor, hints);
 
-            acceptChild(visitor, offset);
-            acceptChild(visitor, rowCount);
-        }
+			acceptChild(visitor, offset);
+			acceptChild(visitor, rowCount);
+		}
 
-        visitor.endVisit(this);
-    }
+		visitor.endVisit(this);
+	}
 
 	public static SQLSelectNode parse(
 		SQLContext context,
@@ -119,11 +119,11 @@ public final class SQLSelectStatementNode : SQLStatementNode
 	override
 	protected void accept0(SQLASTVisitor visitor)
 	{
-        if (visitor.visit(this))
-            acceptChild(visitor, select);
+		if (visitor.visit(this))
+			acceptChild(visitor, select);
 
-        visitor.endVisit(this);
-    }
+		visitor.endVisit(this);
+	}
 
 	public static SQLSelectStatementNode parse(
 		SQLContext context,

@@ -54,23 +54,23 @@ interface SQLASTVisitor {
 
 	// SQLSelectNode
 	void endVisit(SQLSelectNode node);
-    bool visit(SQLSelectNode node);
+	bool visit(SQLSelectNode node);
 
 	// SQLSelectStatementNode
 	void endVisit(SQLSelectStatementNode node);
-    bool visit(SQLSelectStatementNode node);
+	bool visit(SQLSelectStatementNode node);
 
 	// StatementSequenceNode
 	void endVisit(StatementSequenceNode node);
-    bool visit(StatementSequenceNode node);
+	bool visit(StatementSequenceNode node);
 
 	// SQLWithSubqueryClause
 	void endVisit(SQLWithSubqueryClause node);
-    bool visit(SQLWithSubqueryClause node);
+	bool visit(SQLWithSubqueryClause node);
 
 	// SQLWithSubqueryClause.Entry
 	void endVisit(SQLWithSubqueryClause.Entry entry);
-    bool visit(SQLWithSubqueryClause.Entry entry);
+	bool visit(SQLWithSubqueryClause.Entry entry);
 
 	// SQLCommentNode
 	void endVisit(SQLCommentNode node);

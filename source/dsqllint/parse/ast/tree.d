@@ -43,7 +43,7 @@ public final class SQLTree
 {
 	public this(StatementSequenceNode sequence)
 	{
-		this._sequence = sequence;
+		_sequence = sequence;
 	}
 
 
@@ -53,7 +53,7 @@ public final class SQLTree
 	 */
 	public @property StatementSequenceNode sequence()
 	{
-		return this._sequence;
+		return _sequence;
 	}
 
 	override

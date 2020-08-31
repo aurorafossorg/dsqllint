@@ -66,10 +66,10 @@ public final class SQLCommentNode : SQLBaseNode, SQLHint
 		switch(tokName)
 		{
 			case "MULTI_LINE_COMMENT":
-				this._multiLine = true;
+				_multiLine = true;
 				goto case;
 			case "LINE_COMMENT":
-				this._content = tokc.content;
+				_content = tokc.content;
 				break;
 			default:
 				throw new InvalidSQLParseException(
