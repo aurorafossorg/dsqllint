@@ -57,7 +57,7 @@ public final class SQLTree
 	}
 
 	override
-	public string toString()
+	public string toString() const
 	{
 		import std.format : format;
 		return format!"SQLTree(%s)"(_sequence.toString);

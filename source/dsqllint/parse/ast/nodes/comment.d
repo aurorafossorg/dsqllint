@@ -92,7 +92,7 @@ public final class SQLCommentNode : SQLBaseNode, SQLHint
 	 * Returns: true if the comment is multiline, false otherwise.
 	 */
 	@safe pure
-	@property bool isMultiline()
+	@property bool isMultiline() const
 	{
 		return _multiLine;
 	}
@@ -102,14 +102,14 @@ public final class SQLCommentNode : SQLBaseNode, SQLHint
 	 * Returns: the comment content
 	 */
 	@safe pure
-	@property string content()
+	@property string content() const
 	{
 		return _content;
 	}
 
 	///
 	override
-	public string toString()
+	public string toString() const
 	{
 		return _content;
 	}

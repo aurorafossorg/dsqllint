@@ -87,7 +87,7 @@ final class StatementSequenceNode : SQLBaseNode
 
 	///
 	override
-	public string toString()
+	public string toString() const
 	{
 		import std.format : format;
 		return format!"SQLStatementSequence(%s)"(statements);
