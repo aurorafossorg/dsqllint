@@ -10,19 +10,15 @@ interface SQLASTNode
 	void accept0(SQLASTVisitor visitor);
 
 	public static void acceptChild(T = SQLObject)(SQLASTVisitor visitor, T[] children)
+		in(children !is null)
 	{
-		if (children is null)
-			return;
-
 		foreach(T child; children)
 			acceptChild(visitor, child);
 	}
 
 	public static void acceptChild(SQLASTVisitor visitor, SQLObject child)
+		in (child !is null)
 	{
-		if (child is null)
-			return;
-
 		child.accept(visitor);
 	}
 }
